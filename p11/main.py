@@ -58,7 +58,7 @@ while not game_over:
             my = pos[1]
 
             if ((mx > pokemon_x) and (mx < pokemon_x + pokemon_size)
-                and (my > pokemon_y) and (my < pokemon_y + pokemon_size)):
+               and (my > pokemon_y) and (my < pokemon_y + pokemon_size)):
 
                 pokemon_x = random.randint(0, screen_width - pokemon_size)
                 pokemon_y = random.randint(0, screen_height - pokemon_size)
