@@ -7,7 +7,7 @@ PAINT_CIRCLE = 1
 CLEAR_CIRCLE = 2
 
 colors = [(0, 0, 255), (0, 255, 0), (255, 0 ,0)]
-
+current_color = colors[0]
 
 def draw_circle(action, color):
     if action == CLEAR_CIRCLE:
@@ -19,17 +19,14 @@ def draw_circle(action, color):
 
 
 def change_color():
-    # keyboard
-    current_color = colors[0]
+    global current_color
     keys = pygame.key.get_pressed()
-
     if keys[pygame.K_1]:
         current_color = colors[0]
     elif keys[pygame.K_2]:
         current_color = colors[1]
     elif keys[pygame.K_3]:
         current_color = colors[2]
-    return current_color
 
 
 def main ():
@@ -44,18 +41,20 @@ def main ():
                 if event.button == 1:
                     mouse_button = True
                 if event.button == 3:
-                    pass
-                    # draw_circle(CLEAR_CIRCLE)
+
+                    draw_circle(CLEAR_CIRCLE, current_color)
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     mouse_button = False
+            elif event.type == pygame.KEYDOWN:
+                change_color()
         # ENd --------------------------------------------------------
 
 
 
 
         if mouse_button:
-            draw_circle(PAINT_CIRCLE, change_color())
+            draw_circle(PAINT_CIRCLE, current_color)
 
 
 main()
