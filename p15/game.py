@@ -17,10 +17,10 @@ class Diamond:
     width: int = 0
 
     def __init__(self, image):
-        self.image = image  # передаємо зображення
+        self.image = image  # передаємо обєкт зображення
         self.width = self.image.get_width()
         self.x = random.randint(0, screen_width - self.width)
-        self.speed = random.randint(1,4)
+        self.speed = random.randint(3, 7)
 
     def show(self):
         screen.blit(self.image, (self.x, self.y))
@@ -42,7 +42,6 @@ class Diamonds:
 
     def add(self):
         img = self.images[random.randint(0, len(self.images)-1)]
-
         self.diamonds_list.append(Diamond(img))
 
     def draw(self):
@@ -50,11 +49,24 @@ class Diamonds:
             item.show()
 
     def fall(self):
-        pass
+        for item in self.diamonds_list:
+            item.fall()
 
     def delete(self):
         pass
 
+    def check_collision(self, player):
+        collision = 0
+        for item in self.diamonds_list:
+            if ((item.x >= player.x and item.x <= player.x + player.width) and
+                    (item.y >= player.y and item.y <= player.y + player.height)):
+                collision = 1
+                self.diamonds_list.remove(item)
+            elif item.y > screen_height:
+                collision = -1
+                self.diamonds_list.remove(item)
+
+            return collision
 
 class Wizard:
     x: int = 0
@@ -103,12 +115,18 @@ class Game:
     clock = pygame.time.Clock()
     player: Wizard
     player_direction: str = ''
+    diamonds = None
+    diamond_event = pygame.USEREVENT + 1
+    lost: int = 0
+    catch: int = 0
 
     def __init__(self):
         pygame.display.set_caption('Wizard')
         self.background_add(IMAGES_PATH + 'background.png')
-
         self.player = Wizard()
+
+        self.diamonds = Diamonds()
+        self.diamonds_add()
 
     def background_add(self, image: str):
         self.background = pygame.image.load(image)
@@ -116,8 +134,25 @@ class Game:
     def background_draw(self, xy: tuple = (0, 0)):
         screen.blit(self.background, xy)
 
+    def diamonds_add(self):
+        pygame.time.set_timer(self.diamond_event, random.randint(500, 2000))
+        self.diamonds.add()
+
+    def game_status(self):
+        check = self.diamonds.check_collision(self.player)
+
+        if check == 1:
+            self.catch += 1
+        elif check == -1:
+            self.lost += 1
+
+        font = pygame.font.SysFont('Arial', 40)
+        message = 'Score: ' + str(self.catch) + ' - ' + str(self.lost)
+        text = font.render(message, True, (255, 255, 255), (50, 20, 50))
+        screen.blit(text, (10, 10))
+
     def play(self):
-        # Start while-------------------
+        # --- START WHILE ----
         while self.run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -129,15 +164,22 @@ class Game:
                         self.player_direction = 'right'
                 elif event.type == pygame.KEYUP:
                     self.player_direction = ''
+                elif event.type == self.diamond_event:
+                    self.diamonds_add()
 
             if self.run:
                 self.background_draw()
                 self.player.move(self.player_direction)
                 self.player.show()
+                self.diamonds.draw()
+                self.diamonds.fall()
+
+                self.game_status()
 
                 pygame.display.update()
                 self.clock.tick(self.fps)
-        # END WHILE --------------------------------------------
+
+        # --- END WHILE ----
 
         pygame.quit()
 
