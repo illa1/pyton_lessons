@@ -8,6 +8,7 @@ screen_height: int = 700
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+
 class Diamond:
     x: int = 0
     y: int = 0
