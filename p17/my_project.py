@@ -23,6 +23,7 @@ class Player:
     image_left = None
     image_right = None
     image_punch = None
+    loop_punch = -1
 
     def __init__(self):
         self.image_load()
@@ -38,19 +39,17 @@ class Player:
         self.x = int(screen_width / 2 - self.width / 2)
         self.y = int(screen_height / 2 - self.height / 2)
 
-    def move(self, direction: str, player_punch: str):
+    def move(self, direction: str):
         if direction == 'left':
             self.image = self.image_left
             self.move_left()
-        if direction == 'right':
+        elif direction == 'right':
             self.image = self.image_right
             self.move_right()
-        if direction == 'up':
+        elif direction == 'up':
             self.move_up()
-        if direction == 'down':
+        elif direction == 'down':
             self.move_down()
-        if player_punch == 'punch':
-            self.punch()
 
     def move_left(self):
         if self.x - self.speed >= 0:
@@ -76,8 +75,18 @@ class Player:
         else:
             self.y = screen_height - self.height
 
-    def punch(self):
-        self.image = self.image_punch
+    def punch(self, player_punch):
+
+        if self.loop_punch > 0:
+            self.loop_punch += 1
+
+            if self.loop_punch > 5:
+                self.image = self.image_right
+                self.loop_punch = -1
+
+        if player_punch == 'punch' and self.loop_punch < 0:
+            self.image = self.image_punch
+            self.loop_punch = 1
 
     def show(self):
         screen.blit(self.image, (self.x, self.y))
@@ -103,6 +112,8 @@ class Game:
 
     def play(self):
         while self.run:
+            self.clock.tick(self.fps)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.run = False
@@ -121,14 +132,13 @@ class Game:
                     self.player_direction = ''
                     self.player_punch = ''
 
-
             if self.run:
                 self.background_draw()
-                self.player.move(self.player_direction, self.player_punch)
+                self.player.move(self.player_direction)
+                self.player.punch(self.player_punch)
                 self.player.show()
 
                 pygame.display.update()
-                self.clock.tick(self.fps)
 
 
 play = Game()
