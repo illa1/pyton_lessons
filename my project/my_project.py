@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 
 IMAGES_PATH = 'images/'
 
@@ -37,7 +38,7 @@ class Player:
         self.x = int(screen_width / 2 - self.width / 2)
         self.y = int(screen_height / 2 - self.height / 2)
 
-    def move(self, direction: str):
+    def move(self, direction: str, player_punch: str):
         if direction == 'left':
             self.image = self.image_left
             self.move_left()
@@ -48,6 +49,8 @@ class Player:
             self.move_up()
         if direction == 'down':
             self.move_down()
+        if player_punch == 'punch':
+            self.punch()
 
     def move_left(self):
         if self.x - self.speed >= 0:
@@ -76,17 +79,15 @@ class Player:
     def punch(self):
         self.image = self.image_punch
 
-    def show(self, player_punch: str = ''):
+    def show(self):
         screen.blit(self.image, (self.x, self.y))
-        if player_punch == 'True':
-            self.punch()
 
 
 class Game:
     run = True
     player: Player
     player_direction: str = ''
-    player_punch = ''
+    player_punch: str = ''
     fps: int = 60
     clock = pygame.time.Clock()
 
@@ -115,7 +116,7 @@ class Game:
                     if event.key == pygame.K_s:
                         self.player_direction = 'down'
                     if event.key == pygame.K_r:
-                        self.player_punch = 'True'
+                        self.player_punch = 'punch'
                 elif event.type == pygame.KEYUP:
                     self.player_direction = ''
                     self.player_punch = ''
@@ -123,7 +124,7 @@ class Game:
 
             if self.run:
                 self.background_draw()
-                self.player.move(self.player_direction)
+                self.player.move(self.player_direction, self.player_punch)
                 self.player.show()
 
                 pygame.display.update()
