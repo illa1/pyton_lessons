@@ -11,6 +11,42 @@ pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 
+class Goblin:
+    x: int = 0
+    y: int = 0
+    speed: int = 2
+    width: int = 0
+    height: int = 0
+    image_name: str = 'goblin1.png'
+    image = None
+    goblins_list: list = []
+
+    def __init__(self):
+        self.image_load()
+
+    def image_load(self):
+        self.image = pygame.image.load(IMAGES_PATH + self.image_name)
+
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+        self.x = int(screen_width)
+        self.y = int(screen_height / 2 - self.height / 2)
+
+    def show(self):
+        screen.blit(self.image, (self.x, self.y))
+
+    def move(self):
+        if self.x > -self.width:
+            self.x -= self.speed
+
+    def add(self):
+        self.goblins_list.append(self.image)
+
+    def draw(self):
+        for item in self.goblins_list:
+            item.show()
+
+
 class Player:
     x: int = 0
     y: int = 0
@@ -94,21 +130,29 @@ class Player:
 
 class Game:
     run = True
+    goblin = None
     player: Player
     player_direction: str = ''
     player_punch: str = ''
     fps: int = 60
     clock = pygame.time.Clock()
+    goblin_event = pygame.USEREVENT + 1
 
     def __init__(self):
         self.bg = pygame.image.load('images/bg-title.png')
         self.player = Player()
+
+        self.goblin = Goblin()
 
     def background_add(self, image: str):
         self.bg = pygame.image.load(image)
 
     def background_draw(self, xy: tuple = (0, 0)):
         screen.blit(self.bg, xy)
+
+    def goblin_add(self):
+        pygame.time.set_timer(self.goblin_event, random.randint(500, 2000))
+        self.goblin.add()
 
     def play(self):
         while self.run:
@@ -131,11 +175,17 @@ class Game:
                 elif event.type == pygame.KEYUP:
                     self.player_direction = ''
                     self.player_punch = ''
+                elif event.type == self.goblin_event:
+                    self.goblin_add()
+                    print(1)
 
             if self.run:
                 self.background_draw()
                 self.player.move(self.player_direction)
                 self.player.punch(self.player_punch)
+                self.goblin.show()
+                self.goblin.move()
+                self.goblin.draw()
                 self.player.show()
 
                 pygame.display.update()

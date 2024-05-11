@@ -26,8 +26,6 @@ class Goblin:
         self.image = pygame.image.load(IMAGES_PATH + self.image_name)
         self.width = self.image.get_width()
         self.height = self.image.get_height()
-        # self.x = int(screen_width)
-        # self.y = int(screen_height / 2 - self.height / 2)
 
     def show(self, item):
         screen.blit(item['im'], (item['x'], item['y']))
@@ -45,8 +43,6 @@ class Goblin:
         self.goblins_list.append(g)
 
     def draw(self):
-        print(len(self.goblins_list))
-
         for item in self.goblins_list:
             n = self.move_item(item)
 
