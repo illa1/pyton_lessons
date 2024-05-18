@@ -23,7 +23,8 @@ class Heart:
         self.image_load()
 
     def image_load(self):
-        self.image = pygame.image.load(IMAGES_PATH + self.image_name)
+        image = pygame.image.load(IMAGES_PATH + self.image_name)
+        self.image = pygame.transform.scale(image, (30, 30))
         self.width = self.image.get_width()
         self.height = self.image.get_height()
 
@@ -32,26 +33,24 @@ class Heart:
 
 
 class Hearts:
-    x = 0
-    y = 0
     heart_list = []
-    heart = None
 
     def __init__(self):
-        heart = Hearts()
-        self.heart_list.append(heart)
-        self.heart_list.append(heart)
-        self.heart_list.append(heart)
-        self.x = 5
-        self.y = 5
+        step = 0
+
+        for i in range(1, 4):
+            heart = Heart()
+            heart.x += step
+            self.heart_list.append(heart)
+            step += 32
 
     def draw(self):
         for h in self.heart_list:
-            self.x += 89
             h.show()
 
-    def show(self, item):
-        screen.blit(item, (self.x, self.y))
+    def collision(self):
+        pass
+
 
 
 class Goblin:
@@ -89,6 +88,7 @@ class Goblin:
         for item in self.goblins_list:
             n = self.move_item(item)
 
+            # if self.check_col():
             if n == 0:
                 self.goblins_list.remove(item)
 
@@ -96,6 +96,12 @@ class Goblin:
                 if ((item['x'] + self.width / 2 >= player.x and item['x'] <= player.x + player.width / 2) and
                         (item['y'] + self.height / 2 >= player.y and item['y'] <= player.y + player.height / 2)):
                     self.goblins_list.remove(item)
+
+    # def check_col(self, obj):
+    #     if 1 == 2:
+    #         return True
+    #
+    #     return False
 
 
 class Player:
@@ -193,7 +199,7 @@ class Game:
     def __init__(self):
         self.bg = pygame.image.load('images/bg-title.png')
         self.player = Player()
-        self.heart = Heart()
+        self.hearts = Hearts()
 
         self.goblin = Goblin()
         pygame.time.set_timer(self.goblin_event, random.randint(500, 2000))
@@ -239,7 +245,7 @@ class Game:
                 self.player.punch(self.player_punch)
                 self.goblin.draw(self.player)
                 self.player.show()
-                self.heart.show()
+                self.hearts.draw()
 
                 pygame.display.update()
 
