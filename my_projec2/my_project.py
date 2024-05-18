@@ -11,6 +11,49 @@ pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 
+class Heart:
+    x: int = 5
+    y: int = 5
+    width: int = 0
+    height: int = 0
+    image_name: str = 'heart1.png'
+    image = None
+
+    def __init__(self):
+        self.image_load()
+
+    def image_load(self):
+        self.image = pygame.image.load(IMAGES_PATH + self.image_name)
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+
+    def show(self):
+        screen.blit(self.image, (self.x, self.y))
+
+
+class Hearts:
+    x = 0
+    y = 0
+    heart_list = []
+    heart = None
+
+    def __init__(self):
+        heart = Hearts()
+        self.heart_list.append(heart)
+        self.heart_list.append(heart)
+        self.heart_list.append(heart)
+        self.x = 5
+        self.y = 5
+
+    def draw(self):
+        for h in self.heart_list:
+            self.x += 89
+            h.show()
+
+    def show(self, item):
+        screen.blit(item, (self.x, self.y))
+
+
 class Goblin:
     speed: int = 2
     width: int = 0
@@ -42,12 +85,17 @@ class Goblin:
         g = {'im': self.image, 'x': screen_width, 'y': random.randint(0, screen_height-100)}
         self.goblins_list.append(g)
 
-    def draw(self):
+    def draw(self, player):
         for item in self.goblins_list:
             n = self.move_item(item)
 
             if n == 0:
                 self.goblins_list.remove(item)
+
+            if player.image == player.image_punch:
+                if ((item['x'] + self.width / 2 >= player.x and item['x'] <= player.x + player.width / 2) and
+                        (item['y'] + self.height / 2 >= player.y and item['y'] <= player.y + player.height / 2)):
+                    self.goblins_list.remove(item)
 
 
 class Player:
@@ -135,6 +183,7 @@ class Game:
     run = True
     goblin = None
     player: Player
+    heart: Heart
     player_direction: str = ''
     player_punch: str = ''
     fps: int = 60
@@ -144,6 +193,7 @@ class Game:
     def __init__(self):
         self.bg = pygame.image.load('images/bg-title.png')
         self.player = Player()
+        self.heart = Heart()
 
         self.goblin = Goblin()
         pygame.time.set_timer(self.goblin_event, random.randint(500, 2000))
@@ -187,8 +237,9 @@ class Game:
                 self.background_draw()
                 self.player.move(self.player_direction)
                 self.player.punch(self.player_punch)
-                self.goblin.draw()
+                self.goblin.draw(self.player)
                 self.player.show()
+                self.heart.show()
 
                 pygame.display.update()
 
