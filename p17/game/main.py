@@ -174,34 +174,63 @@ class Menu:
 class Enemy:
     x: int = 0
     y: int = 0
-    speed: int = 0
+    speed: int = 3
     image = None
 
-    def add(self):
-        pass
+    def __init__(self, img):
+        self.image = img
+        self.x = random.randint(0, SCREEN_WIDTH)
 
     def move(self):
-        pass
+        self.y += self.speed
 
     def fire(self):
         pass
 
+    def show(self):
+        screen.blit(self.image, (self.x, self.y))
+
 
 class Enemies:
-    pass
+    enemies_list = []
+
+    def add(self):
+        # self.enemies_list.append(self.enemy)
+        img_ = pygame.image.load(IMAGES_PATH + 'ship_0016.png')
+        img = pygame.transform.rotate(img_, 180)
+        self.enemies_list.append(Enemy(img))
+
+    def draw(self):
+        for item in self.enemies_list:
+            item.show()
+
+    def move(self):
+        for item in self.enemies_list:
+            item.move()
+
+    # def delete(self, bullets: int):
+    #     for item in self.enemies_list:
+    #         if ((bullets.x > item.x and bullets.x < item.x + 100) and (bullets.y > item.y and bullets.y < item.y + 3)):
+    #             self.enemies_list.remove(item)
 
 
 class Game:
     bg_game = None
     game_run: bool = False
+    enemies_event = pygame.USEREVENT + 1
 
     def __init__(self):
         self.player = Player()
         self.bg_game = Background()
         self.menu = Menu()
-
         self.dt = 1
         self.interval = time.time()
+        self.enemies = Enemies()
+        self.bullets = Bullets()
+
+    def enemies_add(self):
+        pygame.time.set_timer(self.enemies_event, random.randint(500, 2000))
+        self.enemies.add()
 
     def delta_time(self):
         clock.tick(FPS)
@@ -228,6 +257,7 @@ class Game:
 
     def run(self):
         self.game_run = True
+        self.enemies_add()
 
         while self.game_run:
             self.delta_time()
@@ -249,11 +279,17 @@ class Game:
                 elif event.type == pygame.KEYUP:
                     if event.key in self.player.moving:
                         self.player.moving.remove(event.key)
+                elif event.type == self.enemies_event:
+                    self.enemies_add()
 
             if self.game_run:
                 self.bg_game.draw_background()
                 self.player.move()
                 self.player.draw()
+
+                self.enemies.move()
+                self.enemies.draw()
+                # self.enemies.delete(self.bullets)
 
                 pygame.display.update()
 

@@ -51,7 +51,6 @@ class Hearts:
             # if heart_lost == 0:
             #     self.heart_list.remove(h)
 
-
     def collision(self):
         pass
 
@@ -141,19 +140,6 @@ class Player:
         self.height = self.image.get_height()
         self.x = int(screen_width / 2 - self.width / 2)
         self.y = int(screen_height / 2 - self.height / 2)
-
-    # def move(self, direction: str):
-    #     if direction == 'left':
-    #         self.image = self.image_left
-    #         self.move_left()
-    #     elif direction == 'right':
-    #         self.image = self.image_right
-    #         self.move_right()
-    #     elif direction == 'up':
-    #         self.move_up()
-    #     elif direction == 'down':
-    #         self.move_down()
-
 
     def move(self):
         if len(self.direction) > 0:
