@@ -98,6 +98,8 @@ class Goblin:
                 if self.heart_lost > 0:
                     self.heart_lost -= 1
                     print(self.heart_lost)
+                    if self.heart_lost == 0:
+                        pygame.quit()
 
             if player.image == player.image_punch:
                 if ((item['x'] + self.width / 2 >= player.x and item['x'] <= player.x + player.width / 2) and
