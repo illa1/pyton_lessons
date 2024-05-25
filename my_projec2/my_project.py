@@ -54,6 +54,10 @@ class Hearts:
     def collision(self):
         pass
 
+    def lost(self):
+        if len(self.heart_list):
+            self.heart_list.remove(self.heart_list[0])
+
 
 class Goblin:
     speed: int = 2
@@ -62,9 +66,10 @@ class Goblin:
     image_name: str = 'goblin1.png'
     image = None
     goblins_list: list = []
-    heart_lost: int = 3
 
-    def __init__(self):
+
+    def __init__(self, hearts):
+        self.hearts = hearts
         self.image_load()
 
     def image_load(self):
@@ -94,11 +99,12 @@ class Goblin:
             # if self.check_col():
             if n == 0:
                 self.goblins_list.remove(item)
-                if self.heart_lost > 0:
-                    self.heart_lost -= 1
-                    print(self.heart_lost)
-                    if self.heart_lost == 0:
-                        pygame.quit()
+
+                self.hearts.lost()
+                # print(self.heart_lost)
+                # if self.heart_lost == 0:
+                #     # TODO: Menu
+                # pygame.quit()
 
             if player.image == player.image_punch:
                 if ((item['x'] + self.width / 2 >= player.x and item['x'] <= player.x + player.width / 2) and
@@ -209,7 +215,7 @@ class Game:
         self.player = Player()
         self.hearts = Hearts()
 
-        self.goblin = Goblin()
+        self.goblin = Goblin(self.hearts)
         pygame.time.set_timer(self.goblin_event, random.randint(500, 2000))
 
     def background_add(self, image: str):
