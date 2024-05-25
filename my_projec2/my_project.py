@@ -7,6 +7,7 @@ IMAGES_PATH = 'images/'
 screen_width: int = 800
 screen_height: int = 500
 
+
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 
@@ -34,6 +35,7 @@ class Heart:
 
 class Hearts:
     heart_list = []
+    heart_lost: int = 0
 
     def __init__(self):
         step = 0
@@ -47,10 +49,12 @@ class Hearts:
     def draw(self):
         for h in self.heart_list:
             h.show()
+            if self.heart_lost == 1:
+                self.heart_list.remove(h)
+
 
     def collision(self):
         pass
-
 
 
 class Goblin:
@@ -84,13 +88,16 @@ class Goblin:
         g = {'im': self.image, 'x': screen_width, 'y': random.randint(0, screen_height-100)}
         self.goblins_list.append(g)
 
-    def draw(self, player):
+    def draw(self, player, heart_lost: int = 0):
         for item in self.goblins_list:
             n = self.move_item(item)
 
             # if self.check_col():
             if n == 0:
                 self.goblins_list.remove(item)
+                if heart_lost < 3:
+                    heart_lost -= 1
+                    print(heart_lost)
 
             if player.image == player.image_punch:
                 if ((item['x'] + self.width / 2 >= player.x and item['x'] <= player.x + player.width / 2) and
@@ -105,6 +112,7 @@ class Goblin:
 
 
 class Player:
+    direction: list = []
     x: int = 0
     y: int = 0
     speed: int = 5
@@ -132,17 +140,29 @@ class Player:
         self.x = int(screen_width / 2 - self.width / 2)
         self.y = int(screen_height / 2 - self.height / 2)
 
-    def move(self, direction: str):
-        if direction == 'left':
-            self.image = self.image_left
-            self.move_left()
-        elif direction == 'right':
-            self.image = self.image_right
-            self.move_right()
-        elif direction == 'up':
-            self.move_up()
-        elif direction == 'down':
-            self.move_down()
+    # def move(self, direction: str):
+    #     if direction == 'left':
+    #         self.image = self.image_left
+    #         self.move_left()
+    #     elif direction == 'right':
+    #         self.image = self.image_right
+    #         self.move_right()
+    #     elif direction == 'up':
+    #         self.move_up()
+    #     elif direction == 'down':
+    #         self.move_down()
+
+
+    def move(self):
+        if len(self.direction) > 0:
+            if self.direction[0] == pygame.K_a:
+                self.move_left()
+            if self.direction[0] == pygame.K_d:
+                self.move_right()
+            if self.direction[0] == pygame.K_w:
+                self.move_up()
+            if self.direction[0] == pygame.K_s:
+                self.move_down()
 
     def move_left(self):
         if self.x - self.speed >= 0:
@@ -190,7 +210,7 @@ class Game:
     goblin = None
     player: Player
     heart: Heart
-    player_direction: str = ''
+    # player_direction: str = ''
     player_punch: str = ''
     fps: int = 60
     clock = pygame.time.Clock()
@@ -222,26 +242,22 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.run = False
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_a:
-                        self.player_direction = 'left'
-                    if event.key == pygame.K_d:
-                        self.player_direction = 'right'
-                    if event.key == pygame.K_w:
-                        self.player_direction = 'up'
-                    if event.key == pygame.K_s:
-                        self.player_direction = 'down'
+                    if event.key == pygame.K_a or event.key == pygame.K_d or event.key == pygame.K_w or event.key == pygame.K_s:
+                        if event.key not in self.player.direction:
+                            self.player.direction.append(event.key)
+
                     if event.key == pygame.K_r:
                         self.player_punch = 'punch'
                 elif event.type == pygame.KEYUP:
-                    self.player_direction = ''
+                    if event.key in self.player.direction:
+                        self.player.direction.remove(event.key)
                     self.player_punch = ''
                 elif event.type == self.goblin_event:
                     self.goblin_add()
-                    print(1)
 
             if self.run:
                 self.background_draw()
-                self.player.move(self.player_direction)
+                self.player.move()
                 self.player.punch(self.player_punch)
                 self.goblin.draw(self.player)
                 self.player.show()
