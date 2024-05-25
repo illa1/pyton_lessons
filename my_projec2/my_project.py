@@ -35,7 +35,6 @@ class Heart:
 
 class Hearts:
     heart_list = []
-    heart_lost: int = 0
 
     def __init__(self):
         step = 0
@@ -49,8 +48,8 @@ class Hearts:
     def draw(self):
         for h in self.heart_list:
             h.show()
-            if self.heart_lost == 1:
-                self.heart_list.remove(h)
+            # if heart_lost == 0:
+            #     self.heart_list.remove(h)
 
 
     def collision(self):
@@ -64,6 +63,7 @@ class Goblin:
     image_name: str = 'goblin1.png'
     image = None
     goblins_list: list = []
+    heart_lost: int = 3
 
     def __init__(self):
         self.image_load()
@@ -88,16 +88,16 @@ class Goblin:
         g = {'im': self.image, 'x': screen_width, 'y': random.randint(0, screen_height-100)}
         self.goblins_list.append(g)
 
-    def draw(self, player, heart_lost: int = 0):
+    def draw(self, player):
         for item in self.goblins_list:
             n = self.move_item(item)
 
             # if self.check_col():
             if n == 0:
                 self.goblins_list.remove(item)
-                if heart_lost < 3:
-                    heart_lost -= 1
-                    print(heart_lost)
+                if self.heart_lost > 0:
+                    self.heart_lost -= 1
+                    print(self.heart_lost)
 
             if player.image == player.image_punch:
                 if ((item['x'] + self.width / 2 >= player.x and item['x'] <= player.x + player.width / 2) and
@@ -233,6 +233,10 @@ class Game:
     def goblin_add(self):
         pygame.time.set_timer(self.goblin_event, random.randint(500, 2000))
         self.goblin.add()
+
+    def heart_lost_game(self, heart_lost: int):
+        if heart_lost == 0:
+            self.run = False
 
     def play(self):
         while self.run:
