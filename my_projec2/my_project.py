@@ -1,11 +1,13 @@
 import pygame
 import random
 import time
+import sys
 
 IMAGES_PATH = 'images/'
 
 screen_width: int = 800
 screen_height: int = 500
+game_over = False
 
 
 pygame.init()
@@ -45,6 +47,14 @@ class Hearts:
             self.heart_list.append(heart)
             step += 32
 
+    def h_apend(self):
+        step = 0
+        for i in range(1, 4):
+            heart = Heart()
+            heart.x += step
+            self.heart_list.append(heart)
+            step += 32
+
     def draw(self):
         for h in self.heart_list:
             h.show()
@@ -56,7 +66,13 @@ class Hearts:
 
     def lost(self):
         if len(self.heart_list):
-            self.heart_list.remove(self.heart_list[0])
+            self.heart_list.remove(self.heart_list[len(self.heart_list) - 1])
+
+    def game_over(self):
+
+        if len(self.heart_list) == 0:
+            return True
+        return False
 
 
 class Goblin:
@@ -199,6 +215,48 @@ class Player:
         screen.blit(self.image, (self.x, self.y))
 
 
+class Menu:
+    def __init__(self):
+        bg_img = pygame.image.load(IMAGES_PATH + 'Carved_9Slides.png')
+        self.bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height))
+        box_img = pygame.image.load(IMAGES_PATH + 'Button_Blue_3Slides.png')
+        self.box_img = pygame.transform.scale(box_img, (300, 100))
+
+    def start_btn(self):
+        color = (0, 0, 0)
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+        if self.start_pos():
+            color = (255, 255, 255)
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+        font = pygame.font.SysFont('Arial', 40)
+        text = font.render('START', True, color)
+        screen.blit(text, (350, 130)) # 430 160
+
+    def draw(self):
+        screen.blit(self.bg_img, (0, 0))
+        screen.blit(self.box_img, ((screen_width / 2 - (self.box_img.get_width() / 2)), (screen_height / 2 - self.box_img.get_height() - 35)))
+        self.start_btn()
+        self.start_pos()
+
+    def start_pos(self):
+        pos = pygame.mouse.get_pos()
+
+        if (pos[0] > 340 and pos[0] < 455 and pos[1] > 130 and pos[1] < 160):
+            return True
+
+        return False
+
+    def mouse_click(self):
+        b = pygame.mouse.get_pressed()  # (False, False, False)
+
+        if self.start_pos() and b[0]:
+            return 'run'
+
+        return None
+
+
 class Game:
     run = True
     goblin = None
@@ -214,6 +272,7 @@ class Game:
         self.bg = pygame.image.load('images/bg-title.png')
         self.player = Player()
         self.hearts = Hearts()
+        self.menu = Menu()
 
         self.goblin = Goblin(self.hearts)
         pygame.time.set_timer(self.goblin_event, random.randint(500, 2000))
@@ -232,13 +291,37 @@ class Game:
         if heart_lost == 0:
             self.run = False
 
+
+    def init(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_s:
+                        self.play()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.menu.mouse_click() == 'run':
+                        self.play()
+
+            self.menu.draw()
+            pygame.display.update()
+
     def play(self):
-        while self.run:
+        self.game_run = True
+
+        while self.game_run:
             self.clock.tick(self.fps)
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.run = False
+                    sys.exit()
+                if self.hearts.game_over():
+                    self.game_run = False
+                    self.hearts.h_apend()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a or event.key == pygame.K_d or event.key == pygame.K_w or event.key == pygame.K_s:
                         if event.key not in self.player.direction:
@@ -246,6 +329,9 @@ class Game:
 
                     if event.key == pygame.K_r:
                         self.player_punch = 'punch'
+                    if event.key == pygame.K_q:
+                        self.game_run = False
+                        break
                 elif event.type == pygame.KEYUP:
                     if event.key in self.player.direction:
                         self.player.direction.remove(event.key)
@@ -261,8 +347,9 @@ class Game:
                 self.player.show()
                 self.hearts.draw()
 
+
                 pygame.display.update()
 
 
 play = Game()
-play.play()
+play.init()
