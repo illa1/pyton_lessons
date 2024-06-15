@@ -1,7 +1,8 @@
 import pygame
 import random
-import time
 import sys
+import time
+import asyncio
 
 IMAGES_PATH = 'images/'
 
@@ -257,6 +258,30 @@ class Menu:
         return None
 
 
+class Menu_Booton:
+    def __init__(self):
+        self.img = pygame.image.load(IMAGES_PATH + 'Pressed_02.png')
+
+    def draw(self):
+        screen.blit(self.img, (screen_width - self.img.get_width(), 0))
+
+    def start_pos(self):
+        pos = pygame.mouse.get_pos()
+
+        if (pos[0] > screen_width - self.img.get_width() and pos[0] < screen_width and pos[1] > 0 and pos[1] < self.img.get_height()):
+            return True
+
+        return False
+
+    def mouse_click(self):
+        b = pygame.mouse.get_pressed()  # (False, False, False)
+
+        if self.start_pos() and b[0]:
+            return True
+
+        return False
+
+
 class Game:
     run = True
     goblin = None
@@ -273,6 +298,7 @@ class Game:
         self.player = Player()
         self.hearts = Hearts()
         self.menu = Menu()
+        self.menu_booton = Menu_Booton()
 
         self.goblin = Goblin(self.hearts)
         pygame.time.set_timer(self.goblin_event, random.randint(500, 2000))
@@ -298,9 +324,6 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_s:
-                        self.play()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if self.menu.mouse_click() == 'run':
                         self.play()
@@ -319,19 +342,22 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.run = False
                     sys.exit()
+                if self.menu_booton.mouse_click():
+                    self.game_run = False
+                    self.player.direction = []
                 if self.hearts.game_over():
                     self.game_run = False
+                    self.player.direction = []
                     self.hearts.h_apend()
+                    self.goblin.goblins_list = []
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a or event.key == pygame.K_d or event.key == pygame.K_w or event.key == pygame.K_s:
                         if event.key not in self.player.direction:
                             self.player.direction.append(event.key)
 
-                    if event.key == pygame.K_r:
+                    if event.key == pygame.K_SPACE:
                         self.player_punch = 'punch'
-                    if event.key == pygame.K_q:
-                        self.game_run = False
-                        break
+
                 elif event.type == pygame.KEYUP:
                     if event.key in self.player.direction:
                         self.player.direction.remove(event.key)
@@ -346,10 +372,12 @@ class Game:
                 self.goblin.draw(self.player)
                 self.player.show()
                 self.hearts.draw()
+                self.menu_booton.draw()
 
 
                 pygame.display.update()
 
 
 play = Game()
-play.init()
+asyncio.run(play.init())
+
