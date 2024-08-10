@@ -2,21 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
     <title>login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <form>
+    <form name="login" method="post" action="#">
         <h2>Login</h2>
-        <label for="">
-            Enter login:
-            <input type="text" name="username">
-        </label>
-        <label for="">
-            Enter password:
-            <input type="password" name="password">
-        </label>
-        <button type="submit" name="submit"></button>
+<!--        <label for="">-->
+<!--            Enter login:-->
+<!--            <input type="text" name="username">-->
+<!--        </label>-->
+<!--        <label for="">-->
+<!--            Enter password:-->
+<!--            <input type="password" name="password">-->
+<!--        </label>-->
+        <input name="login" type="password" required placeholder="enter login"><br>
+        <input name="password" type="password" required placeholder="enter password"><br>
+        <button type="submit" name="submit">LOG IN</button>
     </form>        
 </body>
 </html>

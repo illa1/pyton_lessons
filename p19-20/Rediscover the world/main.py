@@ -15,10 +15,19 @@ def login():
     return render_template('login.html')
 
 
-# @app.route('/illa')
-# def illa():
-#
-#     return f"<h1>illa</h1>"
+@app.route('/add_article')
+def add_article():
+    return  render_template('add_article.html')
+
+
+@app.route('/explore')
+def explore():
+    return render_template('articles.html')
+
+
+@app.route('/<name>')
+def test(name):
+    return f"<h1>text {name}</h1>"
 
 
 if __name__ == '__main__':

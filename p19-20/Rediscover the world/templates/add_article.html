@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <form name="add_article" method="post" action="#" class="add_article">
+        <h2>Add new post</h2>
+        <p>Post name</p>
+        <input name="title" type="text" required>
+        <p>Post text</p>
+        <textarea name="text" required rows="15" cols="100"></textarea>
+        <p>Image url</p>
+        <input name="URL" type="url" required>
+        <p>Continent</p>
+        <select name="continent" required>
+            <option>Африка</option>
+            <option>Азія</option>
+            <option>Європа</option>
+            <option>Східна Америка</option>
+            <option>Північна Америка</option>
+            <option>Антарктида</option>
+            <option>Австралія</option>
+        </select><br>
+        <button name="submit" type="submit">submit</button>
+        <button name="reset" type="reset">reset</button>
+    </form>
+</body>
+</html>
