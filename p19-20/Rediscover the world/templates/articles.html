@@ -1,21 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <header>
-        <nav>
-            <ul class="menu">
-                <li><a href="/">MAIN</a></li>
-                <li><a href="/explore">INTERESTING PlASE</a></li>
-            </ul>
-        </nav>
-    </header>
-    <p>
-        Error
-    </p>
-</body>
-</html>
+{% extends 'basic.html' %}
+{% block main %}
+        <ul>
+            {% for link in links %}
+                <li>
+                    <a href="Details">{{link}}</a>
+                </li>
+            {% endfor %}
+        </ul>
+{% endblock %}
