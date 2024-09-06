@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-    <title>login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends 'basic.html' %}
+{% block main %}
     <form name="login" method="post" action="#">
         <h2>Login</h2>
 <!--        <label for="">-->
@@ -21,5 +14,4 @@
         <input name="password" type="password" required placeholder="enter password"><br>
         <button type="submit" name="submit">LOG IN</button>
     </form>        
-</body>
-</html>
+{% endblock %}

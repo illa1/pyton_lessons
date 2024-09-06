@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends 'basic.html' %}
+{% block main %}
     <form name="add_article" method="post" action="#" class="add_article">
         <h2>Add new post</h2>
         <p>Post name</p>
@@ -27,5 +21,4 @@
         <button name="submit" type="submit">submit</button>
         <button name="reset" type="reset">reset</button>
     </form>
-</body>
-</html>
+{% endblock %}
